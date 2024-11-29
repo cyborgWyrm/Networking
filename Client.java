@@ -5,6 +5,7 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
+import javax.swing.JFrame;
 
 
 // Client class was largely copied/referenced by instructor code
@@ -72,11 +73,31 @@ public class Client {
 	// process connection with server
 	private void processConnection() throws IOException
 	{
-		do
-		{
-			sendData(message);
-
-		} while (!message.equals("TERMINATE"));
+		ClientJFrame window = new ClientJFrame();
+		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		
+		System.out.println("waiting on input");
+		int[][] matrix1;
+		int[][] matrix2;
+		
+		while (true) {
+			if (window.getMatrix(0) != null && window.getMatrix(1) != null) {
+				System.out.println("getting");
+				matrix1 = window.getMatrix(0);
+				matrix2 = window.getMatrix(1);
+				break;
+			}
+		}
+		
+		// oooookkkay so this is my current iteration of banging my
+		// head against the wall. client is never receiving the info
+		// from client j frame. but it kinda needs the info. What
+		// should i do? What am I supposed to do? Maybe I should look
+		// at the instructor examples? he probably has an example with
+		// server-client gui. Maybe theyre supposed to be in the same
+		// file? Somehow?
+		sendData(matrix1);
+		sendData(matrix2);
 	}
 
 	// close streams and socket
@@ -96,7 +117,7 @@ public class Client {
 	}
 
 	// send message to server
-	private void sendData(String message)
+	private void sendData(Object message)
 	{
 		try
 		{

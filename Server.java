@@ -66,38 +66,16 @@ public class Server {
 	// these methods were also copied from intructor's server.java, but will
 	// require modification.
 	private void processConnection() throws IOException {
+		try {
+			int[][] matrix1 = (int[][]) input.readObject();
+			int[][] matrix2 = (int[][]) input.readObject();
+			print2dArray(matrix1);
+			print2dArray(matrix2);
+		}
+		catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
 		
-		String message = "";
-
-		do // process messages sent from client
-		{
-			try // read message and display it
-			{
-				message = (String) input.readObject();
-				
-				System.out.println("\nCLIENT>>>" + message);
-			} 
-			catch (ClassNotFoundException e) 
-			{
-				System.out.println("\nUnknown object type received");
-			}
-			
-			//Unless client requests terminate, reply.
-			if(!message.equals("TERMINATE"))
-			{
-				/* Send the same message back to 
-				the client every time. This
-				prevents the Client from hanging
-				on this line of code:
-				message = (String) input.readObject(); */
-				sendData("OK, Client\n");
-			}
-		} while (!message.equals("TERMINATE"));
-		
-		/* Send this so the client has
-		confirmation that the connection 
-		should be terminated. */
-		sendData("TERMINATE");
 	}
 	
 	
@@ -128,6 +106,20 @@ public class Server {
 		catch (IOException e) 
 		{
 			System.out.println("\nError writing object");
+		}
+	}
+	
+	
+	
+	// print out a given matrix (taken from matrixaddition)
+	public static void print2dArray(int[][] array) {
+		for (int row = 0; row < array.length; row++) {
+			for (int col = 0; col < array[row].length; col++) {
+				// print out each number
+				System.out.printf("%-4d", array[row][col]);
+			}
+			// new line for every row
+			System.out.println();
 		}
 	}
 	

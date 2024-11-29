@@ -9,6 +9,9 @@ import java.io.FileNotFoundException;
 public class ClientJFrame extends JFrame {
 	
 	private JTextField textField;
+	int[][] matrix1 = null;
+	int[][] matrix2 = null;
+	boolean readyToSend = false;
 	
 	public ClientJFrame() {
 		
@@ -25,10 +28,11 @@ public class ClientJFrame extends JFrame {
 					int rows = input.nextInt();
 					int cols = input.nextInt();
 					
-					int[][] matrix1 = matrixFromFile(rows, cols, input);
-					int[][] matrix2 = matrixFromFile(rows, cols, input);
+					matrix1 = matrixFromFile(rows, cols, input);
+					matrix2 = matrixFromFile(rows, cols, input);
 					
-					
+					readyToSend = true;
+					System.out.println("ready to send");
 				}
 			}
 		); 
@@ -36,6 +40,17 @@ public class ClientJFrame extends JFrame {
 		setSize(400, 300);
 		setVisible(true);
 	}
+	
+	public int[][] getMatrix(int whichOne) {
+	
+		if (whichOne == 0) {
+			return matrix1;
+		}
+		else {
+			return matrix2;
+		}
+	}
+	
 	
 	// copied this from readwritedata.java
 	private Scanner getFile(String fileName) {
