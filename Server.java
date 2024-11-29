@@ -40,7 +40,7 @@ public class Server {
 				}
 			}
 		}
-		catch {
+		catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -65,7 +65,7 @@ public class Server {
 	
 	// these methods were also copied from intructor's server.java, but will
 	// require modification.
-	private void processConnection throws IOException {
+	private void processConnection() throws IOException {
 		
 		String message = "";
 

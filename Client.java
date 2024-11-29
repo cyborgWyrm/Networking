@@ -72,23 +72,9 @@ public class Client {
 	// process connection with server
 	private void processConnection() throws IOException
 	{
-		String message;
 		do
 		{
-			System.out.print("Type a message: ");
-			message = userInput.nextLine();
-			if(!message.equals("")) {
-				sendData(message);
-			}
-			try // read message and display it
-			{
-				message = (String)input.readObject();
-				System.out.println("\nSERVER>>>" + message);
-			}
-			catch (ClassNotFoundException e) 
-			{
-				System.out.println("\nUnknown object type received");
-			}
+			sendData(message);
 
 		} while (!message.equals("TERMINATE"));
 	}

@@ -27,6 +27,8 @@ public class ClientJFrame extends JFrame {
 					
 					int[][] matrix1 = matrixFromFile(rows, cols, input);
 					int[][] matrix2 = matrixFromFile(rows, cols, input);
+					
+					
 				}
 			}
 		); 
