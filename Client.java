@@ -73,21 +73,28 @@ public class Client {
 	// process connection with server
 	private void processConnection() throws IOException
 	{
-		ClientJFrame window = new ClientJFrame();
+		int[][] matrix1 = null;
+		int[][] matrix2 = null;
+		ClientJFrame window = new ClientJFrame(matrix1, matrix2);
 		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		System.out.println("waiting on input");
-		int[][] matrix1;
-		int[][] matrix2;
-		
 		while (true) {
+			if (matrix1 != null && matrix2 != null) {
+				System.out.println("received!");
+				break;
+			}
+		}
+		
+		
+		/*while (true) {
 			if (window.getMatrix(0) != null && window.getMatrix(1) != null) {
 				System.out.println("getting");
 				matrix1 = window.getMatrix(0);
 				matrix2 = window.getMatrix(1);
 				break;
 			}
-		}
+		}*/
 		
 		// oooookkkay so this is my current iteration of banging my
 		// head against the wall. client is never receiving the info
