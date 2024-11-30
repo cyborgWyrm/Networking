@@ -70,6 +70,7 @@ public class Server {
 			int[][] matrix1 = (int[][]) input.readObject();
 			int[][] matrix2 = (int[][]) input.readObject();
 			print2dArray(matrix1);
+			System.out.println();
 			print2dArray(matrix2);
 		}
 		catch (ClassNotFoundException e) {
@@ -79,7 +80,7 @@ public class Server {
 	}
 	
 	
-		// close streams and socket
+	// close streams and socket
 	private void closeConnection() 
 	{
 		System.out.println("\nTerminating connection\n");

@@ -6,10 +6,15 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 import javax.swing.JFrame;
+import javax.swing.JTextField;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.io.File;
+import java.io.FileNotFoundException;
 
 
 // Client class was largely copied/referenced by instructor code
-public class Client {
+public class Client extends JFrame {
 	
 	private final Scanner userInput = new Scanner(System.in);
 	private ObjectOutputStream output;
@@ -20,6 +25,41 @@ public class Client {
 	private final String host = "127.0.0.1";
 	private final int portNumber = 12345;
 	
+	private JTextField textField;
+	
+	public Client() {
+		
+		super("Client");
+		
+		textField = new JTextField("Enter file name");
+		add(textField);
+		
+		textField.addActionListener(
+			new ActionListener() {
+				// get the file name specified by user
+				public void actionPerformed(ActionEvent event) {
+					Scanner input = getFile(event.getActionCommand());
+					int rows = input.nextInt();
+					int cols = input.nextInt();
+					
+					int[][] matrix1 = matrixFromFile(rows, cols, input);
+					int[][] matrix2 = matrixFromFile(rows, cols, input);
+					
+					System.out.println("sending matrices");
+					sendData(matrix1);
+					sendData(matrix2);
+					System.out.println("sent");
+					
+					closeConnection();
+				}
+			}
+		); 
+		
+		setSize(400, 300);
+		setVisible(true);
+	}
+	
+	
 	// connect to server and process messages from server
 	public void runClient()
 	{
@@ -27,7 +67,6 @@ public class Client {
 		{
 			connectToServer();
 			getStreams();
-			processConnection();
 		}
 		catch (EOFException e) 
 		{
@@ -36,10 +75,6 @@ public class Client {
 		catch (IOException e)
 		{
 			e.printStackTrace();
-		}
-		finally
-		{
-			closeConnection();
 		}
 	}
 	
@@ -70,43 +105,6 @@ public class Client {
 		System.out.println("\nGot I/O streams\n");
 	}
 
-	// process connection with server
-	private void processConnection() throws IOException
-	{
-		int[][] matrix1 = null;
-		int[][] matrix2 = null;
-		ClientJFrame window = new ClientJFrame(matrix1, matrix2);
-		window.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
-		System.out.println("waiting on input");
-		while (true) {
-			if (matrix1 != null && matrix2 != null) {
-				System.out.println("received!");
-				break;
-			}
-		}
-		
-		
-		/*while (true) {
-			if (window.getMatrix(0) != null && window.getMatrix(1) != null) {
-				System.out.println("getting");
-				matrix1 = window.getMatrix(0);
-				matrix2 = window.getMatrix(1);
-				break;
-			}
-		}*/
-		
-		// oooookkkay so this is my current iteration of banging my
-		// head against the wall. client is never receiving the info
-		// from client j frame. but it kinda needs the info. What
-		// should i do? What am I supposed to do? Maybe I should look
-		// at the instructor examples? he probably has an example with
-		// server-client gui. Maybe theyre supposed to be in the same
-		// file? Somehow?
-		sendData(matrix1);
-		sendData(matrix2);
-	}
-
 	// close streams and socket
 	private void closeConnection()
 	{
@@ -135,5 +133,36 @@ public class Client {
 		{
 			System.out.println("\nError writing object");
 		}
+	}
+	
+	
+	
+	// copied this from readwritedata.java
+	private Scanner getFile(String fileName) {
+		File file = new File(fileName);
+		Scanner input = null;
+		try {
+			input = new Scanner(file);
+		} catch (FileNotFoundException e) {
+			System.out.printf("%nError on file: %s (either enpty or wrong file format)%n%n", file); 
+			e.printStackTrace();
+			System.exit(1);
+		}
+		
+		return input;
+	}
+	
+	// copied this from my matrix addition
+	public static int[][] matrixFromFile(int rows, int cols, Scanner fileReader) {
+		int[][] matrix = new int[rows][cols];
+		
+		for (int r = 0; r < rows; r++) {
+			for (int c = 0; c < cols; c++) {
+				// read in the values and put in the proper places in the array
+				matrix[r][c] = fileReader.nextInt();
+			}
+		}
+		
+		return matrix;
 	}
 }
