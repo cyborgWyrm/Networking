@@ -7,6 +7,8 @@ import java.net.Socket;
 import java.util.Scanner;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
+import javax.swing.JTextArea;
+import java.awt.FlowLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import java.io.File;
@@ -26,37 +28,66 @@ public class Client extends JFrame {
 	private final int portNumber = 12345;
 	
 	private JTextField textField;
+	private JTextArea textArea;
 	
 	public Client() {
 		
 		super("Client");
 		
+		setLayout(new FlowLayout());
 		textField = new JTextField("Enter file name");
+		textArea = new JTextArea();
 		add(textField);
+		add(textArea);
 		
 		textField.addActionListener(
 			new ActionListener() {
-				// get the file name specified by user
 				public void actionPerformed(ActionEvent event) {
-					Scanner input = getFile(event.getActionCommand());
-					int rows = input.nextInt();
-					int cols = input.nextInt();
-					
-					int[][] matrix1 = matrixFromFile(rows, cols, input);
-					int[][] matrix2 = matrixFromFile(rows, cols, input);
-					
-					System.out.println("sending matrices");
-					sendData(matrix1);
-					sendData(matrix2);
-					System.out.println("sent");
-					
-					closeConnection();
+					String message = event.getActionCommand();
+					if (!message.equals("TERMINATE")) {
+						getAndSendFiles(event);
+						getAndPrintResult();
+					}
+					else {
+						closeConnection();
+					}
 				}
 			}
 		); 
 		
 		setSize(400, 300);
 		setVisible(true);
+	}
+	
+	private void getAndSendFiles(ActionEvent event) {
+		Scanner file = getFile(event.getActionCommand());
+		int rows = file.nextInt();
+		int cols = file.nextInt();
+					
+		int[][] matrix1 = matrixFromFile(rows, cols, file);
+		int[][] matrix2 = matrixFromFile(rows, cols, file);
+					
+		System.out.println("sending matrices");
+		sendData(matrix1);
+		sendData(matrix2);
+		System.out.println("sent");
+	}
+	
+	private void getAndPrintResult() {
+		int[][] result;
+		try {
+			result = (int[][]) input.readObject();
+			System.out.println("result received");
+			String matrixAsString = getString(result);
+			textArea.append("\n" + matrixAsString);
+		}
+		catch (IOException e) {
+			
+		}
+		catch (ClassNotFoundException e) {
+			
+		}
+		
 	}
 	
 	
@@ -145,7 +176,6 @@ public class Client extends JFrame {
 			input = new Scanner(file);
 		} catch (FileNotFoundException e) {
 			System.out.printf("%nError on file: %s (either enpty or wrong file format)%n%n", file); 
-			e.printStackTrace();
 			System.exit(1);
 		}
 		
@@ -164,5 +194,20 @@ public class Client extends JFrame {
 		}
 		
 		return matrix;
+	}
+	
+	// get string of a given matrix
+	private String getString(int[][] array) {
+		String result = "";
+		
+		for (int row = 0; row < array.length; row++) {
+			for (int col = 0; col < array[row].length; col++) {
+				// add each number
+				result = result + String.format("%-4d", array[row][col]);
+			}
+			// new line for every row
+			result = result + "\n";
+		}
+		return result;
 	}
 }

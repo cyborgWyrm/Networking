@@ -66,15 +66,50 @@ public class Server {
 	// these methods were also copied from intructor's server.java, but will
 	// require modification.
 	private void processConnection() throws IOException {
-		try {
-			int[][] matrix1 = (int[][]) input.readObject();
-			int[][] matrix2 = (int[][]) input.readObject();
-			print2dArray(matrix1);
-			System.out.println();
-			print2dArray(matrix2);
-		}
-		catch (ClassNotFoundException e) {
-			e.printStackTrace();
+		while (true) {
+			try {
+				int[][] matrix1 = (int[][]) input.readObject();
+				int[][] matrix2 = (int[][]) input.readObject();
+				print2dArray(matrix1);
+				System.out.println();
+				print2dArray(matrix2);
+				System.out.println();
+				
+				int[][] resultMatrix = new int[matrix1.length][matrix1[0].length];
+				
+				// Create all four threads
+				ThreadOperation thread0 = new ThreadOperation(matrix1, matrix2, "AA", resultMatrix);
+				ThreadOperation thread1 = new ThreadOperation(matrix1, matrix2, "AB", resultMatrix);
+				ThreadOperation thread2 = new ThreadOperation(matrix1, matrix2, "BA", resultMatrix);
+				ThreadOperation thread3 = new ThreadOperation(matrix1, matrix2, "BB", resultMatrix);
+				
+				// Start all four threads running
+				thread0.start();
+				thread1.start();
+				thread2.start();
+				thread3.start();
+				
+				// wait for all four threads to complete
+				try {
+					thread0.join();
+					thread1.join();
+					thread2.join();
+					thread3.join();
+				}
+				catch (InterruptedException e) {
+					
+				}
+				
+				
+				// print out the resulting matrix
+				System.out.println("Added together equals:");
+				print2dArray(resultMatrix);
+				
+				sendData(resultMatrix);
+			}
+			catch (ClassNotFoundException e) {
+				e.printStackTrace();
+			}
 		}
 		
 	}
@@ -97,7 +132,7 @@ public class Server {
 	}
 
 	// send message to client
-	private void sendData(String message)
+	private void sendData(Object message)
 	{
 		try
 		{
